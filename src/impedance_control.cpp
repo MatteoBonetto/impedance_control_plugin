@@ -64,6 +64,8 @@ public:
         _incipit_parameters._F0_max = input.value("F0_max", 0.0);
 
         _impedance_control_manager->set_incipit_parameters(_incipit_parameters);
+      } else if (topic == "loadcells") {
+
       }
     } catch (json::parse_error &e) {
       _error = e.what();

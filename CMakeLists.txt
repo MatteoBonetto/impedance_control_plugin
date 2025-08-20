@@ -64,6 +64,14 @@ FetchContent_Populate(plugin
   BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/_deps/plugin-build
 )
 
+FetchContent_Declare(common_walker 
+  GIT_REPOSITORY https://github.com/mmt-unitn/common_walker.git
+  GIT_TAG        main
+  GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(common_walker)
+
+include_directories(${common_walker_SOURCE_DIR})
 include_directories(${plugin_SOURCE_DIR}/src)
 
 
