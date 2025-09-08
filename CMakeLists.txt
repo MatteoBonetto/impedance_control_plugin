@@ -11,7 +11,7 @@
 # Creation date: 2025-08-06T17:16:55.984+0200
 # NOTICE: MADS Version 1.3.1
 cmake_minimum_required(VERSION 3.20)
-project(impedance_control VERSION 1.3.1 LANGUAGES CXX)
+project(impedance_control VERSION 1.3.5 LANGUAGES CXX)
 if(CMAKE_BUILD_TYPE STREQUAL "")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
 endif()
@@ -66,7 +66,7 @@ FetchContent_Populate(plugin
 
 FetchContent_Declare(common_walker 
   GIT_REPOSITORY https://github.com/mmt-unitn/common_walker.git
-  GIT_TAG        main
+  GIT_TAG        0.0.2
   GIT_SHALLOW    TRUE
 )
 FetchContent_MakeAvailable(common_walker)

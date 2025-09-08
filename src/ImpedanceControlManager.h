@@ -1,106 +1,91 @@
 #ifndef IMPEDANCECONTROLMANAGER_H
 #define IMPEDANCECONTROLMANAGER_H
 
-#include <cmath>  // oppure <math.h>, ma <cmath> è preferito in C++
-#include <iostream>
+#include <array>
+#include <cmath> // oppure <math.h>, ma <cmath> è preferito in C++
 #include <common.hpp>
+#include <common_walker.h>
+#include <iostream>
+#include <tuple>
 
-
+using namespace common_walker;
 
 /*******************************************************
  * File:           ImpedanceControlManager.h
- * Purpose:        Declaration of the ImpedanceControlManager class
- *                 responsible for ...
+ * Purpose:        Declaration of the ImpedanceControlManager class,
+ *                 responsible for managing impedance control logic
+ *                 for the walker. This class computes the forces and
+ *                 torques to be applied to the wheels based on physical
+ *                 parameters, ego state signals, and configurable control
+ *                 strategies, including incipit logic for starting movement.
  *
  * Author:         Matteo Bonetto
  * Created:        22/07/2025
  *
  *******************************************************/
 
- enum modes {
-  unknown_mode = 0,
-  impedance_control_mode,
-  joystick_control_mode,
-  emrgency_control_mode,
-  set_reference_mode,
-  unsupported_mode
-};
-
-struct ego_state_estimation {
-  double x = 0.0;
-  double y = 0.0;
-  double theta = 0.0;
-  double speed = 0.0;
-  double angular_speed = 0.0;
-  double acceleration = 0.0;
-  double angular_acceleration = 0.0;
-  double k_theta_ref = 0.0;
-  double k_delta_ref = 0.0;
-  double space_linear = 0.0; // Linear space covered
-  double time_interval = -1;
-};
-
 struct impedance_parameters {
-    double M_v = 0;
-    double C_v = 0; 
-    double K_v = 0; 
-    double M_w = 0;
-    double C_w = 0; 
-    double K_w = 0; 
+  double M_v = 0;
+  double C_v = 0;
+  double K_v = 0;
+  double M_w = 0;
+  double C_w = 0;
+  double K_w = 0;
 };
 
 enum incipit_function_start_moving {
-  none = 0,
+  none_incipit = 0,
   // in case it move slowly a force decrease linearly as velocity increase to
   // push walker
   decrease_linearly_with_velocity,
   decrease_exponentialy_with_time
 };
 
+enum delta_theta_function { none = 0, sqrt_function, atan_function };
+
 struct incipit_parameters {
-  double _v_considered_as_moving = 0; // Speed threshold to consider as moving
-  double _incipit_parameter = 0;      // Parameter for incipit functions
-  double _F0_max = 0;         // Maximum force applied when not moving
-  incipit_function_start_moving incipit_function = none;
+  double g = 0; // Coefficient for force increase when not moving
+  double v_considered_as_moving = 0; // Speed threshold to consider as moving
+  double incipit_parameter = 0;      // Parameter for incipit functions
+  double F0_max = 0;                 // Maximum force applied when not moving
+  incipit_function_start_moving incipit_function = none_incipit;
 };
 
 class ImpedanceControlManager {
-  public:
-    // Constructor to initialize the manager with control parameters
-    ImpedanceControlManager(double wheel_radius, double wheel_base, double g);
-    ~ImpedanceControlManager() = default;
-    
-    return_type compute_incipit();
-    void set_incipit_parameters(const incipit_parameters &params) {
-      _incipit_parameters = params;
-    }
-    return_type compute_impedance_control();
-    ego_state_estimation ego_state;
-    double right_wheel_torque() const { return _right_wheel_torque; }
-    double left_wheel_torque() const { return _left_wheel_torque; }
-  
-  private:
-    // Phisical parameters
-    double _wheel_radius = 0.0;
-    double _wheel_base = 0.0;
-    double _walker_mass = 0.0; // Mass of the walker
-    double _wheel_mass = 0.0; // Mass of the wheel
-    double _I_wheel = 0.0; // Moment of inertia of the wheel
-    double _I_body = 0.0; // Moment of inertia of the walker except for wheels
-    
-    // Incipit parameters
-    double _incipit = 0; // Force offset applied when moving slowly
-    double _g = 0;            // Coefficient for force increase when not moving
-    double _time_no_move = 0; // Time when not moving
-    double _time_moving = 0;  // Time when moving
-    double _F0_start_moving = 0; // Initial force when starting to move
-    incipit_parameters _incipit_parameters;
+public:
+  // Constructor to initialize the manager with control parameters
+  ImpedanceControlManager(walker_phisical_parameter walker_params);
+  ~ImpedanceControlManager() = default;
 
-    // Impedance control
-    impedance_parameters _impedance_params;
-    double _right_wheel_torque = 0.0; // Torque applied on the right wheel
-    double _left_wheel_torque = 0.0;
+  return_type compute_incipit();
+  return_type compute_impedance_control();
 
+  std::array<double, Forces_Measured_COUNT> forces;
+  double right_wheel_torque() const { return _right_wheel_torque; }
+  double left_wheel_torque() const { return _left_wheel_torque; }
+
+  // Incipit parameters
+  incipit_parameters incipit_param;
+  // Phisical parameters
+  walker_phisical_parameter walker_params;
+  // Impedance control
+  impedance_parameters impedance_params;
+  delta_theta_function delta_theta_f = none;
+  // Signals
+  std::map<std::string, Signal> ego_state_map;
+  double time_interval = 0.0;
+
+private:
+  // Incipit variables
+  double _incipit = 0;         // Force offset applied when moving slowly
+  double _time_no_move = 0;    // Time when not moving
+  double _time_moving = 0;     // Time when moving
+  double _F0_start_moving = 0; // Initial force when starting to move
+  bool _is_moving = false;
+
+  // Impedance control
+  double _right_wheel_torque = 0.0; // Torque applied on the right wheel
+  double _left_wheel_torque = 0.0;
 };
 
 #endif
