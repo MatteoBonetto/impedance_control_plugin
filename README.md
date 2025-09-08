@@ -38,23 +38,11 @@ The plugin supports the following settings in the INI file:
 
 ```ini
 [impedance_control]
-# impedance parameters
-M_v = <double>      # Mass for linear motion
-C_v = <double>      # Damping for linear motion
-K_v = <double>      # Stiffness for linear motion
-M_w = <double>      # Mass for angular motion
-C_w = <double>      # Damping for angular motion
-K_w = <double>      # Stiffness for angular motion
-
-# incipit parameters
-incipit_function = <string>         # Function for starting movement (none_incipit, decrease_linearly_with_velocity, decrease_exponentialy_with_time)
-v_considered_as_moving = <double>   # Speed threshold to consider as moving
-incipit_parameter = <double>        # Parameter for incipit function
-F0_max = <double>                   # Maximum force applied when not moving
-g = <double>                        # Coefficient for force increase when not moving
-
-# delta_theta function
-delta_theta_function = <string>     # Function for angle error (none, atan, sqrt)
+wheel_radius = <double>    # Wheel radius (e.g., 0.085)
+wheel_base = <double>      # Distance between wheels (e.g., 0.83)
+walker_mass = <double>     # Mass of the walker (e.g., 40)
+wheel_mass = <double>      # Mass of one wheel (e.g., 1)
+I_body = <double>          # Body inertia (e.g., 6.605744)
 ```
 
 All settings are optional; if omitted, the default values are used.
