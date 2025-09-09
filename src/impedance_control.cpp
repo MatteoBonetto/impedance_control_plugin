@@ -47,7 +47,6 @@ public:
         if (input.contains("ego_state")) {
           for (const auto &[key, signal] :
                _impedance_control_manager->ego_state_map) {
-            std::cout << "ego_state" << input.dump(2) << std::endl;
             double value = input["ego_state"].value<double>(key, 0.0);
             double time_interval =
                 input["ego_state"].value<double>("time_interval", -1.0);

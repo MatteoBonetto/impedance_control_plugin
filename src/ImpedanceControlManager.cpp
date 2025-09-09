@@ -105,9 +105,9 @@ return_type ImpedanceControlManager::compute_impedance_control() {
   // compute the angle between the current angle and the reference angle with
   // versors v1 x v2 = sin(delta)
   double cross_prod =
-      std::cos(ego_state_map["theta"]) *
-          std::sin(ego_state_map["k_theta_ref"]) -
-      std::cos(ego_state_map["k_theta_ref"]) * std::sin(ego_state_map["theta"]);
+      std::sin(ego_state_map["theta"]) *
+          std::cos(ego_state_map["k_theta_ref"]) -
+      std::sin(ego_state_map["k_theta_ref"]) * std::cos(ego_state_map["theta"]);
   double delta_theta = std::asin(cross_prod);
 
   switch (delta_theta_f) {
